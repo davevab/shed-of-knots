@@ -1,0 +1,30 @@
+name: Deploy master
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubunto-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create ZIP deployment package
+        run: zip -r deploy.zip ./
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v18
+        with:
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          application_name: "Shed Of Knots"
+          environment-name: Shedofknots-env
+          existing_bucket_name: elasticbeanstalk-us-east-2-205489256688
+          region: us-east-2
+          version_label: ${{ github.sha }}
+          deployment_package: deploy.zip
+
+
+
+
